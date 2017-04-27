@@ -1,0 +1,14 @@
+ *~
+*/build/
+*/CMakeCache.txt
+CMakeFiles/
+d
+data/
+*.vcxproj
+*.vcxproj.filters
+*.sln
+*.exe
+*.ply
+*.imagedump
+*.png
+*.gch
