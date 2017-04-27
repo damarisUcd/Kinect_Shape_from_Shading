@@ -1,11 +1,10 @@
 *~
-build/
-CMakeCache.txt
-Makefile
+*/build/
+*/CMakeCache.txt
+*/Makefile
 CMakeFiles/
 d
 data/
-*~
 *.vcxproj
 *.vcxproj.filters
 *.sln
@@ -13,3 +12,4 @@ data/
 *.ply
 *.imagedump
 *.png
+*.gch
