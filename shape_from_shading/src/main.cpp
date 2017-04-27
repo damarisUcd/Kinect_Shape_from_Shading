@@ -129,11 +129,11 @@ int main(int argc, const char * argv[])
 
   size_t framecount = 0;
 
-/*  while (!protonect_shutdown &&
-         (framemax == (size_t)-1 || framecount < framemax)) {*/
-         int i = 0;
+  while (!protonect_shutdown &&
+         (framemax == (size_t)-1 || framecount < framemax)) {
+  /*       int i = 0;
    while ( i == 0){
-     i++;
+     i++;*/
     if (!listener.waitForNewFrame(frames, 10 * 1000))  // 10 sconds
     {
       cout << "timeout!" << endl;
@@ -149,11 +149,28 @@ int main(int argc, const char * argv[])
     cv::Mat depthMat(depth->height, depth->width, CV_32FC1);
     depthMat_frame.copyTo(depthMat);
     cv::Mat rgbMatrix(registered.height, registered.width, CV_8UC4, registered.data);
-    cv::cvtColor(rgbMatrix, rgbMatrix, CV_BGRA2GRAY); // transform to 3-channels
-    cv::Mat mask(depth->height, depth->width, CV_8UC1, cv::Scalar(0));
-    depthMat.convertTo(depthMat, CV_8UC1);
-    imshow("RGB",rgbMatrix);
+    cv::Mat initialUnknown;
+    depthMat.copyTo(initialUnknown);
+  //  resize(rgbMatrix, rgbMatrix, depthMat.size(), 0, 0, INTER_LINEAR);
+    cv::cvtColor(rgbMatrix, rgbMatrix, CV_BGRA2GRAY); // transform to gray scale
+    cv::Mat mask(2*depth->height, depth->width, CV_32FC1, cv::Scalar(1));
+
+    rgbMatrix.convertTo(rgbMatrix, CV_32FC1);
+    double min, max;
+    minMaxLoc(depthMat, &min, &max);
+    depthMat.convertTo(depthMat, CV_32FC1, -255.0 / max, 255.0);  // Conversion to char to show
+    initialUnknown.convertTo(initialUnknown, CV_32FC1, -255.0 / max, 255.0);  // Conversion to char to show
+
+    normalize(rgbMatrix,rgbMatrix,0,1, NORM_L2);
+    //normalize(depthMat,depthMat,0,1, NORM_L2);
+  //  normalize(initialUnknown,initialUnknown,0,1, NORM_L2);
+    cv::Mat depthToShow;
+    depthMat.convertTo(depthToShow,CV_8UC1);
+    imshow("depthMat", depthToShow);
     cv::waitKey(30);
+
+  //  imshow("RGB",rgbMatrix);
+  //  cv::waitKey(30);
 
   //  std::cout << "colour type " << rgbMatrix.type()<< std::endl;
   //  std::cout << "depth type " << depthMat.type()<< std::endl;
@@ -177,9 +194,9 @@ int main(int argc, const char * argv[])
     }
 
     SFSSolverInput solverInputCPU, solverInputGPU;
-    solverInputGPU.load(rgbMatrix,depthMat,mask, true);
+    solverInputGPU.load(rgbMatrix,depthToShow, initialUnknown,mask, true);
 
-    //solverInputGPU.targetDepth->savePLYMesh("sfsInitDepth.ply");
+    solverInputGPU.targetDepth->savePLYMesh("sfsInitDepth.ply");
     //solverInputCPU.load(inputFilenamePrefix, false);
 
     CombinedSolverParameters params;
@@ -201,9 +218,9 @@ int main(int argc, const char * argv[])
     std::shared_ptr<SimpleBuffer> result = solver.result();
     printf("Solved\n");
     printf("About to save\n");
-//result->save("sfsOutput.imagedump");
-//    result->savePNG("sfsOutput", 150.0f);
-//    result->savePLYMesh("sfsOutput.ply");
+    result->save("sfsOutput.imagedump");
+    result->savePNG("sfsOutput", 150.0f);
+    result->savePLYMesh("sfsOutput.ply");
     printf("Save\n");
     listener.release(frames);
     /**

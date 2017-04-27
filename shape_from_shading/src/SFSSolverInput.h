@@ -50,18 +50,21 @@ struct SFSSolverInput {
         probParams.set("edgeMaskC", edgeMaskC);
     }
 
-    void load(const cv::Mat frame, const cv::Mat depthMap, const cv::Mat mask, bool onGPU) {
+    void load(const cv::Mat frame, const cv::Mat depthMap,const cv::Mat initialUnk,  const cv::Mat mask, bool onGPU) {
         targetIntensity = std::shared_ptr<SimpleBuffer>(new SimpleBuffer(frame, onGPU));
         maskEdgeMap     = std::shared_ptr<SimpleBuffer>(new SimpleBuffer(mask,     onGPU));
-        initialUnknown  = std::shared_ptr<SimpleBuffer>(new SimpleBuffer(depthMap, onGPU));
+        initialUnknown  = std::shared_ptr<SimpleBuffer>(new SimpleBuffer(initialUnk, onGPU));
         targetDepth     = std::shared_ptr<SimpleBuffer>(new SimpleBuffer(depthMap,     onGPU));
         std::cout << "Data loaded" << std::endl;
 
         std::cout << targetIntensity->width() << "\n" << targetIntensity->height() << "\n" << targetIntensity->type() << "\n" << std::endl;
         std::cout << initialUnknown->width() << "\n" << initialUnknown->height()<< "\n" << initialUnknown->type() << "\n" << std::endl;
 
-
-
+        /*targetIntensity->savePNG("intensity", 255);
+        targetDepth->savePNG("depthpng", 1);
+        targetDepth->savePLYPoints("depthpoints.ply");
+        targetDepth->savePLYMesh("depthmesh.ply");
+*/
 
         //auto test = std::shared_ptr<SimpleBuffer>(new SimpleBuffer(filenamePrefix + "_targetDepth.imagedump", false));
         float* ptr = (float*)targetDepth.get();

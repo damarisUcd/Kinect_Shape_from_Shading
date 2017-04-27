@@ -32,21 +32,44 @@ SimpleBuffer::SimpleBuffer(cv::Mat frame, bool onGPU, bool clampInfinity) :
     fread(ptr, elementSize*m_channelCount, (m_width*m_height), fileHandle);
 
     fclose(fileHandle);*/
+    /*imshow("frame", frame);
+    cv::waitKey(0);*/
     m_width = frame.cols;
     m_height = frame.rows;
     m_channelCount = frame.channels();
     int datatype;
-    if(frame.type() == 5)
-        datatype = 0;
-    else
-        datatype = 1;
+    if(frame.type() == 5){
+        datatype = 0;}
+    else{
+        datatype = 1;}
+
     m_dataType = DataType(datatype);
 
     std::cout << "m_dataType: "<< m_dataType << std::endl;
     size_t elementSize = datatypeToSize(m_dataType);
 
     size_t size = elementSize*m_channelCount*(m_width*m_height);
-    void *ptr = malloc(size);
+    //size_t size = m_channelCount*(m_width*m_height);
+
+    float*ptr = new float[m_channelCount*(m_width*m_height)];
+//    void *ptr = malloc(size);
+
+/*    for(int i = 0; i<m_height; i++){
+        for(int j = 0; j<m_width; j++){
+                ptr[(i*m_width+j)]=frame.at<float>(i, j);
+
+               // std::cout << " " << png_array[m_channelCount*(i*m_width+j)+k] << " ";
+        }
+        //std::cout << "\n";
+    */
+    if(datatype == 0){
+        ptr = (float*)frame.data;}
+    else{
+        ptr = (float*)frame.data;}
+
+    /*for(int i=0; i<m_width*m_height;++i){
+        std::cout << ptr[i] << std::endl;
+    }*/
     /*std::cout << "m_dataType: " << m_dataType << std::endl;
     std::cout << "elementSize: " << elementSize << std::endl;
 
@@ -56,10 +79,6 @@ SimpleBuffer::SimpleBuffer(cv::Mat frame, bool onGPU, bool clampInfinity) :
     std::cout << "elementSize: " << elementSize << std::endl;
 
     std::cout << size << std::endl;*/
-
-    //uchar* ptr = new uchar[m_width*m_height];
-    ptr = frame.data;
-    clampInfinity = false;
 
     if (m_dataType == 0 && clampInfinity) {
       float* fPtr = (float*)ptr;
@@ -73,8 +92,6 @@ SimpleBuffer::SimpleBuffer(cv::Mat frame, bool onGPU, bool clampInfinity) :
 	}
       }
     }
-
-
 
     if (m_onGPU) {
         cudaMalloc(&m_data, size);
