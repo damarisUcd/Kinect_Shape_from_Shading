@@ -8,6 +8,4 @@ d
 *.sln
 *.exe
 *.ply
-*.imagedump
-*.png
 *.gch
