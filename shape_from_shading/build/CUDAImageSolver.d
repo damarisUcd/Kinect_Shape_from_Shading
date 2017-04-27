@@ -208,7 +208,50 @@ build/CUDAImageSolver.o: src/CUDAImageSolver.cpp src/CUDAImageSolver.h \
   /usr/bin/../lib/gcc/x86_64-linux-gnu/4.8/../../../../include/c++/4.8/bits/shared_ptr.h \
   /usr/bin/../lib/gcc/x86_64-linux-gnu/4.8/../../../../include/c++/4.8/bits/shared_ptr_base.h \
   /usr/bin/../lib/gcc/x86_64-linux-gnu/4.8/../../../../include/c++/4.8/backward/auto_ptr.h \
-  src/../../shared/OptGraph.h src/SimpleBuffer.h src/SFSSolverInput.h \
+  src/../../shared/OptGraph.h src/SimpleBuffer.h \
+  /usr/local/include/opencv2/core/core.hpp \
+  /usr/local/include/opencv2/core.hpp \
+  /usr/local/include/opencv2/core/cvdef.h \
+  /usr/local/include/opencv2/core/hal/interface.h \
+  /usr/bin/../lib/gcc/x86_64-linux-gnu/4.8/../../../../include/c++/4.8/cstddef \
+  /usr/local/include/opencv2/core/version.hpp \
+  /usr/local/include/opencv2/core/base.hpp \
+  /usr/local/include/opencv2/opencv_modules.hpp \
+  /usr/bin/../lib/gcc/x86_64-linux-gnu/4.8/../../../../include/c++/4.8/climits \
+  /usr/local/include/opencv2/core/cvstd.hpp \
+  /usr/bin/../lib/gcc/x86_64-linux-gnu/4.8/../../../../include/c++/4.8/cstring \
+  /usr/include/string.h /usr/local/include/opencv2/core/ptr.inl.hpp \
+  /usr/local/include/opencv2/core/neon_utils.hpp \
+  /usr/local/include/opencv2/core/traits.hpp \
+  /usr/local/include/opencv2/core/matx.hpp \
+  /usr/local/include/opencv2/core/saturate.hpp \
+  /usr/local/include/opencv2/core/fast_math.hpp \
+  /usr/local/include/opencv2/core/types.hpp \
+  /usr/bin/../lib/gcc/x86_64-linux-gnu/4.8/../../../../include/c++/4.8/cfloat \
+  /usr/bin/../lib/clang/3.4/include/float.h \
+  /usr/local/include/opencv2/core/mat.hpp \
+  /usr/local/include/opencv2/core/bufferpool.hpp \
+  /usr/local/include/opencv2/core/mat.inl.hpp \
+  /usr/local/include/opencv2/core/persistence.hpp \
+  /usr/local/include/opencv2/core/operations.hpp \
+  /usr/local/include/opencv2/core/cvstd.inl.hpp \
+  /usr/bin/../lib/gcc/x86_64-linux-gnu/4.8/../../../../include/c++/4.8/complex \
+  /usr/bin/../lib/gcc/x86_64-linux-gnu/4.8/../../../../include/c++/4.8/sstream \
+  /usr/bin/../lib/gcc/x86_64-linux-gnu/4.8/../../../../include/c++/4.8/bits/sstream.tcc \
+  /usr/local/include/opencv2/core/utility.hpp \
+  /usr/local/include/opencv2/core/core_c.h \
+  /usr/local/include/opencv2/core/types_c.h \
+  /usr/local/include/opencv2/core/optim.hpp \
+  /usr/local/include/opencv2/core/ovx.hpp \
+  /usr/local/include/opencv2/highgui/highgui.hpp \
+  /usr/local/include/opencv2/highgui.hpp \
+  /usr/local/include/opencv2/imgcodecs.hpp \
+  /usr/local/include/opencv2/videoio.hpp \
+  /usr/local/include/opencv2/highgui/highgui_c.h \
+  /usr/local/include/opencv2/imgproc/imgproc_c.h \
+  /usr/local/include/opencv2/imgproc/types_c.h \
+  /usr/local/include/opencv2/imgcodecs/imgcodecs_c.h \
+  /usr/local/include/opencv2/videoio/videoio_c.h src/SFSSolverInput.h \
   src/TerraSolverParameters.h src/../../shared/OptUtils.h \
   ../../API/release/include/Opt.h src/ConvergenceAnalysis.h
 
@@ -673,6 +716,94 @@ src/../../shared/OptImage.h:
 src/../../shared/OptGraph.h:
 
 src/SimpleBuffer.h:
+
+/usr/local/include/opencv2/core/core.hpp:
+
+/usr/local/include/opencv2/core.hpp:
+
+/usr/local/include/opencv2/core/cvdef.h:
+
+/usr/local/include/opencv2/core/hal/interface.h:
+
+/usr/bin/../lib/gcc/x86_64-linux-gnu/4.8/../../../../include/c++/4.8/cstddef:
+
+/usr/local/include/opencv2/core/version.hpp:
+
+/usr/local/include/opencv2/core/base.hpp:
+
+/usr/local/include/opencv2/opencv_modules.hpp:
+
+/usr/bin/../lib/gcc/x86_64-linux-gnu/4.8/../../../../include/c++/4.8/climits:
+
+/usr/local/include/opencv2/core/cvstd.hpp:
+
+/usr/bin/../lib/gcc/x86_64-linux-gnu/4.8/../../../../include/c++/4.8/cstring:
+
+/usr/include/string.h:
+
+/usr/local/include/opencv2/core/ptr.inl.hpp:
+
+/usr/local/include/opencv2/core/neon_utils.hpp:
+
+/usr/local/include/opencv2/core/traits.hpp:
+
+/usr/local/include/opencv2/core/matx.hpp:
+
+/usr/local/include/opencv2/core/saturate.hpp:
+
+/usr/local/include/opencv2/core/fast_math.hpp:
+
+/usr/local/include/opencv2/core/types.hpp:
+
+/usr/bin/../lib/gcc/x86_64-linux-gnu/4.8/../../../../include/c++/4.8/cfloat:
+
+/usr/bin/../lib/clang/3.4/include/float.h:
+
+/usr/local/include/opencv2/core/mat.hpp:
+
+/usr/local/include/opencv2/core/bufferpool.hpp:
+
+/usr/local/include/opencv2/core/mat.inl.hpp:
+
+/usr/local/include/opencv2/core/persistence.hpp:
+
+/usr/local/include/opencv2/core/operations.hpp:
+
+/usr/local/include/opencv2/core/cvstd.inl.hpp:
+
+/usr/bin/../lib/gcc/x86_64-linux-gnu/4.8/../../../../include/c++/4.8/complex:
+
+/usr/bin/../lib/gcc/x86_64-linux-gnu/4.8/../../../../include/c++/4.8/sstream:
+
+/usr/bin/../lib/gcc/x86_64-linux-gnu/4.8/../../../../include/c++/4.8/bits/sstream.tcc:
+
+/usr/local/include/opencv2/core/utility.hpp:
+
+/usr/local/include/opencv2/core/core_c.h:
+
+/usr/local/include/opencv2/core/types_c.h:
+
+/usr/local/include/opencv2/core/optim.hpp:
+
+/usr/local/include/opencv2/core/ovx.hpp:
+
+/usr/local/include/opencv2/highgui/highgui.hpp:
+
+/usr/local/include/opencv2/highgui.hpp:
+
+/usr/local/include/opencv2/imgcodecs.hpp:
+
+/usr/local/include/opencv2/videoio.hpp:
+
+/usr/local/include/opencv2/highgui/highgui_c.h:
+
+/usr/local/include/opencv2/imgproc/imgproc_c.h:
+
+/usr/local/include/opencv2/imgproc/types_c.h:
+
+/usr/local/include/opencv2/imgcodecs/imgcodecs_c.h:
+
+/usr/local/include/opencv2/videoio/videoio_c.h:
 
 src/SFSSolverInput.h:
 

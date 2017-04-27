@@ -27,7 +27,6 @@ public:
         m_initialUnknown = std::make_shared<SimpleBuffer>(*inputGPU.initialUnknown, true);
         m_result = std::make_shared<SimpleBuffer>(*inputGPU.initialUnknown, true);
         inputGPU.setParameters(m_problemParams, m_result);
-
         m_dims = { (unsigned int)m_result->width(), (unsigned int)m_result->height() };
 
         addSolver(std::make_shared<CUDAImageSolver>(m_dims), "CUDA", m_combinedSolverParameters.useCUDA);
