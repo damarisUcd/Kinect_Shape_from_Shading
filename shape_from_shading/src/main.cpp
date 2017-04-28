@@ -2,6 +2,8 @@
 #include "CombinedSolver.h"
 #include "SFSSolverInput.h"
 
+
+
 int main(int argc, const char * argv[])
 {
     std::string inputFilenamePrefix = "../data/shape_from_shading/default";
@@ -20,9 +22,13 @@ int main(int argc, const char * argv[])
     }
 
     SFSSolverInput solverInputCPU, solverInputGPU;
-    solverInputGPU.load(inputFilenamePrefix, true);
+
+    solverInputGPU.load_png(inputFilenamePrefix, true);
+
+    std::cout << "png loaded\n";
+
     solverInputGPU.targetDepth->savePLYMesh("sfsInitDepth.ply");
-    solverInputCPU.load(inputFilenamePrefix, false);
+    solverInputCPU.load_png(inputFilenamePrefix, false);
 
     CombinedSolverParameters params;
     params.nonLinearIter = 60;

@@ -7,11 +7,12 @@
 #include <stdio.h>
 #include <math.h>
 #include <limits>
-#include <iostream>
 //using std::memcpy;
+#include <png.h>
+#include "pngMethods.h"
 
 
-
+/*
 SimpleBuffer::SimpleBuffer(std::string filename, bool onGPU, bool clampInfinity) :
     m_onGPU(onGPU)
 {
@@ -29,12 +30,9 @@ SimpleBuffer::SimpleBuffer(std::string filename, bool onGPU, bool clampInfinity)
     fread(ptr, elementSize*m_channelCount, (m_width*m_height), fileHandle);
 
     fclose(fileHandle);
-    
+
     if (m_dataType == 0 && clampInfinity) {
       float* fPtr = (float*)ptr;
-
-      std::ofstream file("image.txt");
-
       for (int i = 0; i < m_width*m_height; ++i) {
 	if (isinf(fPtr[i])) {
 	  if (fPtr[i] > 0) {
@@ -45,11 +43,69 @@ SimpleBuffer::SimpleBuffer(std::string filename, bool onGPU, bool clampInfinity)
 	}
       }
     }
+
     
 
     if (m_onGPU) {
         cudaMalloc(&m_data, size);
         cudaMemcpy(m_data, ptr, size, cudaMemcpyHostToDevice);
+        free(ptr);
+    } else {
+        m_data = ptr;
+    }
+}
+*/
+
+SimpleBuffer::SimpleBuffer(std::string filename, bool onGPU, bool clampInfinity) :
+    m_onGPU(onGPU)
+{
+
+	char *name = new char[filename.length()+1];
+	strcpy(name,filename.c_str());
+
+	png_bytep *ptr = read_png_file(name,&m_width,&m_height,&m_channelCount);
+
+  float *png_array = new float[m_width*m_height*m_channelCount];
+
+  std::cout << " " << m_channelCount;
+
+  for(int i = 0; i<m_height; i++){
+	  png_bytep row = ptr[i];
+	  for(int j = 0; j<m_width; j++){
+		  png_bytep px = &(row[j * 4]);
+
+		  for(int k=0; k<m_channelCount;k++){
+			  png_array[m_channelCount*(i*m_width+j)+k]=px[k];
+		  }
+		  //std::cout << png_array[3*(i*m_width+j)] << " " << png_array[3*(i*m_width+j)+1] << " " << png_array[3*(i*m_width+j)+2] << " ";
+	  }
+	   //std::cout << "\n";
+	}
+
+    m_dataType = DataType(0);
+    size_t elementSize = datatypeToSize(m_dataType);
+    size_t size = elementSize*m_channelCount*(m_width*m_height);
+
+    if (m_dataType == 0 && clampInfinity) {
+      float* fPtr = (float*)ptr;
+      for (int i = 0; i < m_width*m_height; ++i) {
+	if (isinf(fPtr[i])) {
+	  if (fPtr[i] > 0) {
+	    fPtr[i] = std::numeric_limits<float>::max();
+	  } else {
+	    fPtr[i] = -10000.0f;//std::numeric_limits<float>::lowest();
+	  }
+	}
+      }
+    }
+
+    std::cout << " " << size << "\n";
+
+    if (m_onGPU) {
+        cudaMalloc(&m_data, size);
+        std::cout << "buffer2\n";
+        cudaMemcpy(m_data, ptr, size, cudaMemcpyHostToDevice);
+        std::cout << "buffer3\n";
         free(ptr);
     } else {
         m_data = ptr;
