@@ -1,6 +1,7 @@
 *~
-*/build/
-*/CMakeCache.txt
+build/
+shape_from_shading
+CMakeCache.txt
 CMakeFiles/
 d
 data/
