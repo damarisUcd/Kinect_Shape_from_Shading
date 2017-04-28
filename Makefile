@@ -14,4 +14,4 @@ endif
 LFLAGS += -lOpenMeshCore -lOpenMeshTools
 
 
-include ../shared/make_template.inc
+include make_template.inc
