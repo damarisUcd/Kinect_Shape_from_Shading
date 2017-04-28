@@ -129,11 +129,11 @@ int main(int argc, const char * argv[])
 
   size_t framecount = 0;
 
-  while (!protonect_shutdown &&
-         (framemax == (size_t)-1 || framecount < framemax)) {
-  /*       int i = 0;
+/*while (!protonect_shutdown &&
+         (framemax == (size_t)-1 || framecount < framemax)) {*/
+         int i = 0;
    while ( i == 0){
-     i++;*/
+     i++;
     if (!listener.waitForNewFrame(frames, 10 * 1000))  // 10 sconds
     {
       cout << "timeout!" << endl;
@@ -150,7 +150,8 @@ int main(int argc, const char * argv[])
     depthMat_frame.copyTo(depthMat);
     cv::Mat rgbMatrix(registered.height, registered.width, CV_8UC4, registered.data);
     cv::Mat initialUnknown;
-    depthMat.copyTo(initialUnknown);
+    cv::Mat subt;
+  //  subtract(depthMat, 255, depthMat);
   //  resize(rgbMatrix, rgbMatrix, depthMat.size(), 0, 0, INTER_LINEAR);
     cv::cvtColor(rgbMatrix, rgbMatrix, CV_BGRA2GRAY); // transform to gray scale
     cv::Mat mask(2*depth->height, depth->width, CV_32FC1, cv::Scalar(1));
@@ -159,15 +160,18 @@ int main(int argc, const char * argv[])
     double min, max;
     minMaxLoc(depthMat, &min, &max);
     depthMat.convertTo(depthMat, CV_32FC1, -255.0 / max, 255.0);  // Conversion to char to show
-    initialUnknown.convertTo(initialUnknown, CV_32FC1, -255.0 / max, 255.0);  // Conversion to char to show
+  //  initialUnknown.convertTo(initialUnknown, CV_32FC1, -255.0 / max, 255.0);  // Conversion to char to show
+    depthMat.copyTo(initialUnknown);
 
-    normalize(rgbMatrix,rgbMatrix,0,1, NORM_L2);
+    //normalize(rgbMatrix,rgbMatrix,0,1, NORM_L2);
+    //normalize(depthMat,depthMat,0,255, NORM_L2);
+
     //normalize(depthMat,depthMat,0,1, NORM_L2);
   //  normalize(initialUnknown,initialUnknown,0,1, NORM_L2);
     cv::Mat depthToShow;
     depthMat.convertTo(depthToShow,CV_8UC1);
-    imshow("depthMat", depthToShow);
-    cv::waitKey(30);
+    /*imshow("depthMat", depthToShow);
+    cv::waitKey(20);*/
 
   //  imshow("RGB",rgbMatrix);
   //  cv::waitKey(30);
@@ -194,7 +198,7 @@ int main(int argc, const char * argv[])
     }
 
     SFSSolverInput solverInputCPU, solverInputGPU;
-    solverInputGPU.load(rgbMatrix,depthToShow, initialUnknown,mask, true);
+    solverInputGPU.load(rgbMatrix,depthMat, initialUnknown,mask, true);
 
     solverInputGPU.targetDepth->savePLYMesh("sfsInitDepth.ply");
     //solverInputCPU.load(inputFilenamePrefix, false);
