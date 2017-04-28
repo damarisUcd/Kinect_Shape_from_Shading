@@ -11,7 +11,7 @@ ifeq ($(UNAME), Linux)
   LFLAGS += -L../external/OpenMesh/lib/linux -Wl,-rpath,../external/OpenMesh/lib/linux
 endif
 
-LFLAGS += -lOpenMeshCore -lOpenMeshTools -lpng -lz
+LFLAGS += -lOpenMeshCore -lOpenMeshTools -lpng -lz -g
 
 
 include ../shared/make_template.inc

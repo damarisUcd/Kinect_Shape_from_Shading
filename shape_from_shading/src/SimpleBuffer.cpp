@@ -10,6 +10,8 @@
 //using std::memcpy;
 #include <png.h>
 #include "pngMethods.h"
+#include <iostream>
+#include <fstream>
 
 
 /*
@@ -44,7 +46,7 @@ SimpleBuffer::SimpleBuffer(std::string filename, bool onGPU, bool clampInfinity)
       }
     }
 
-    
+    std::cout << " " << m_width << " "<< m_height << " " << m_channelCount << "\n" ;
 
     if (m_onGPU) {
         cudaMalloc(&m_data, size);
@@ -55,6 +57,9 @@ SimpleBuffer::SimpleBuffer(std::string filename, bool onGPU, bool clampInfinity)
     }
 }
 */
+
+
+
 
 SimpleBuffer::SimpleBuffer(std::string filename, bool onGPU, bool clampInfinity) :
     m_onGPU(onGPU)
@@ -67,27 +72,27 @@ SimpleBuffer::SimpleBuffer(std::string filename, bool onGPU, bool clampInfinity)
 
   float *png_array = new float[m_width*m_height*m_channelCount];
 
-  std::cout << " " << m_channelCount;
-
   for(int i = 0; i<m_height; i++){
 	  png_bytep row = ptr[i];
 	  for(int j = 0; j<m_width; j++){
 		  png_bytep px = &(row[j * 4]);
 
 		  for(int k=0; k<m_channelCount;k++){
-			  png_array[m_channelCount*(i*m_width+j)+k]=px[k];
+			  png_array[m_channelCount*(i*m_width+j)+k]=px[k]/255.0;
+			 // std::cout << " " << png_array[m_channelCount*(i*m_width+j)+k] << " ";
 		  }
-		  //std::cout << png_array[3*(i*m_width+j)] << " " << png_array[3*(i*m_width+j)+1] << " " << png_array[3*(i*m_width+j)+2] << " ";
 	  }
-	   //std::cout << "\n";
-	}
+	  //std::cout << "\n";
+  }
+
+  std::cout << " " << m_width << " "<< m_height << " " << m_channelCount << " " ;
 
     m_dataType = DataType(0);
     size_t elementSize = datatypeToSize(m_dataType);
     size_t size = elementSize*m_channelCount*(m_width*m_height);
 
     if (m_dataType == 0 && clampInfinity) {
-      float* fPtr = (float*)ptr;
+      float* fPtr = (float*) png_array;
       for (int i = 0; i < m_width*m_height; ++i) {
 	if (isinf(fPtr[i])) {
 	  if (fPtr[i] > 0) {
@@ -104,13 +109,15 @@ SimpleBuffer::SimpleBuffer(std::string filename, bool onGPU, bool clampInfinity)
     if (m_onGPU) {
         cudaMalloc(&m_data, size);
         std::cout << "buffer2\n";
-        cudaMemcpy(m_data, ptr, size, cudaMemcpyHostToDevice);
+        cudaMemcpy(m_data, png_array, size, cudaMemcpyHostToDevice);
         std::cout << "buffer3\n";
-        free(ptr);
+        free(png_array);
     } else {
-        m_data = ptr;
+        m_data = (float*)png_array;
     }
 }
+
+
 
 SimpleBuffer::SimpleBuffer(const SimpleBuffer& other, bool onGPU) :
     m_onGPU(onGPU),

@@ -68,7 +68,7 @@ struct SFSSolverInput {
         targetDepth->savePNG("depth",255);
         targetIntensity->savePNG("intensity",255);
         initialUnknown->savePNG("unknown",255);
-        maskEdgeMap->savePNG("edge", 1);
+        maskEdgeMap->savePNG("edge", 255);
     /*    std::cout << test->type() << std::endl;
         cv::Mat dst(test->width(), test->height(), CV_64FC1,ptr);
         cv::imshow("depth map", dst);
@@ -93,7 +93,7 @@ struct SFSSolverInput {
 		std::cout << "InitialUnknown\n";
 		initialUnknown  = std::shared_ptr<SimpleBuffer>(new SimpleBuffer(filenamePrefix + "_initialUnknown.png", onGPU));
 		std::cout << "maskEdgeMap\n";
-		maskEdgeMap     = std::shared_ptr<SimpleBuffer>(new SimpleBuffer(filenamePrefix + "_maskEdgeMap.png",  onGPU));
+		maskEdgeMap     = std::shared_ptr<SimpleBuffer>(new SimpleBuffer(filenamePrefix + "_maskBinaryToPNG.png",  onGPU));
 
 		std::cout << "Png loaded finished\n";
 
@@ -104,7 +104,7 @@ struct SFSSolverInput {
 		//targetDepth->savePNG("depth",255);
 		//targetIntensity->savePNG("intensity",255);
 		//initialUnknown->savePNG("unknown",255);
-		//maskEdgeMap->savePNG("edge", 1);
+		//maskEdgeMap->savePNG("edge", 255);
 	/*    std::cout << test->type() << std::endl;
 		cv::Mat dst(test->width(), test->height(), CV_64FC1,ptr);
 		cv::imshow("depth map", dst);
