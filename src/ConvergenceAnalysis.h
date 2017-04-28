@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include <fstream>  
+#include <fstream>
 
 template<class T>
 class FunctionValue
