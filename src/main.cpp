@@ -145,7 +145,15 @@ int main(int argc, const char * argv[])
         }
         cv::Mat depthMat_frame(depth->height, depth->width, CV_32FC1, depth->data);
         cv::Mat rgbMatrix(registered.height, registered.width, CV_8UC4, registered.data);
-
+        cv::Mat binary_mask(2*depth->height, depth->width, CV_32FC1, cv::Scalar(1));
+        cv::Mat mask(depth->height, depth->width, CV_32FC1, cv::Scalar(1));
+        mask.setTo(0, depthMat_frame == 0);
+        cv::Mat targetROI;
+        targetROI = binary_mask(cv::Rect(0, 0, mask.cols, mask.rows));
+        mask.copyTo(targetROI);
+        targetROI = binary_mask(cv::Rect(0, mask.rows, mask.cols, mask.rows));
+        mask.copyTo(targetROI);
+        imshow("mask",binary_mask);
       //
 
         cv::Mat depthMat,initialUnknown,depthD;
@@ -154,16 +162,16 @@ int main(int argc, const char * argv[])
         cv::Mat subt;
       //  resize(rgbMatrix, rgbMatrix, depthMat.size(), 0, 0, INTER_LINEAR);
         cv::cvtColor(rgbMatrix, rgbMatrix, CV_BGRA2GRAY); // transform to gray scale
-        cv::Mat mask(2*depth->height, depth->width, CV_32FC1, cv::Scalar(1));
 
         rgbMatrix.convertTo(rgbMatrix, CV_32FC1);
         double min, max;
         minMaxLoc(depthMat, &min, &max);
         depthMat.convertTo(depthMat, CV_32FC1, 255.0 / max);  // Conversion to char to show
 
-
-        imshow("depthMat_frame", depthMat);
-        cv::waitKey(40);
+        cv::Mat depth2show;
+        depthMat.convertTo(depth2show,CV_8UC1);
+        imshow("depthMat_frame", depth2show);
+        cv::waitKey(30);
         depthMat.copyTo(initialUnknown);
         // >> Kinect input >> //
 
