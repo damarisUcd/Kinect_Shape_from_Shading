@@ -37,6 +37,7 @@ SimpleBuffer::SimpleBuffer(cv::Mat frame, bool onGPU, bool clampInfinity) :
     m_width = frame.cols;
     m_height = frame.rows;
     m_channelCount = frame.channels();
+//    std::cout << "Width: " << m_width << "\n" <<  "Height: " << m_height << "\n" <<  "Channels: " << m_channelCount << "\n";
     int datatype;
     if(frame.type() == 5){
         datatype = 0;}
@@ -50,8 +51,8 @@ SimpleBuffer::SimpleBuffer(cv::Mat frame, bool onGPU, bool clampInfinity) :
 
     size_t size = elementSize*m_channelCount*(m_width*m_height);
     //size_t size = m_channelCount*(m_width*m_height);
-
-    float*ptr = (float*)frame.data;
+    float* ptr = new float[m_width*m_height];
+    ptr = (float*)frame.data;
 
 //    void *ptr = malloc(size);
 
@@ -79,12 +80,6 @@ SimpleBuffer::SimpleBuffer(cv::Mat frame, bool onGPU, bool clampInfinity) :
     else{
         ptr = (float*)frame.data;}
 */
-    for(int i=0; i<m_width*m_height;++i){
-        if(ptr[i] == 255)
-            ptr[i] = -1000.0f;
-        else
-            ptr[i] = ptr[i]/255.0;
-    }
     /*std::cout << "m_dataType: " << m_dataType << std::endl;
     std::cout << "elementSize: " << elementSize << std::endl;
 
