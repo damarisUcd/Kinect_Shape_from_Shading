@@ -155,21 +155,30 @@ int main(int argc, const char * argv[])
         mask.copyTo(targetROI);
         imshow("mask",binary_mask);
       //
+      double min, max;
 
-        cv::Mat depthMat,initialUnknown,depthD;
+        cv::Mat depthMat,initialUnknown,depthD,depthBilateralF,depthBilateralD;
         depthMat_frame.copyTo(depthMat);
+        const int filterWidth = 7;
+
+        GaussianBlur(depthMat, depthBilateralF, cv::Size(filterWidth,filterWidth),3,3);
+
+        depthBilateralF.convertTo(depthBilateralD, CV_64FC1);  // Conversion to double
+        minMaxLoc(depthBilateralD,&min,&max);
+
+        // Conversion to uchar (value between 0 and 255) to show
+        depthBilateralF.convertTo(depthBilateralF, CV_32FC1, 255.0 / max);
 
         cv::Mat subt;
       //  resize(rgbMatrix, rgbMatrix, depthMat.size(), 0, 0, INTER_LINEAR);
         cv::cvtColor(rgbMatrix, rgbMatrix, CV_BGRA2GRAY); // transform to gray scale
 
         rgbMatrix.convertTo(rgbMatrix, CV_32FC1,1.0/255.0);
-        double min, max;
         minMaxLoc(depthMat, &min, &max);
         depthMat.convertTo(depthMat, CV_32FC1, 255.0 / max);  // Conversion to char to show
         cv::Mat depth2show;
         depthMat.convertTo(depth2show,CV_8UC1);
-        depthMat.convertTo(depthMat, CV_32FC1, 1.0/255.0);  // Normalize between 0-1
+        depthBilateralF.convertTo(depthBilateralF, CV_32FC1, 1.0/255.0);  // Normalize between 0-1
 
 
 
@@ -196,7 +205,7 @@ int main(int argc, const char * argv[])
         }
 
         SFSSolverInput solverInputCPU, solverInputGPU;
-        solverInputGPU.load(rgbMatrix,depthMat, initialUnknown,mask, true);
+        solverInputGPU.load(rgbMatrix,depthBilateralF, initialUnknown,mask, true);
 
         solverInputGPU.targetDepth->savePLYMesh("sfsInitDepth.ply");
 
