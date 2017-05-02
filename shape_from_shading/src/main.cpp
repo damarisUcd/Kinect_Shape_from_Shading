@@ -129,11 +129,11 @@ int main(int argc, const char * argv[])
 
   size_t framecount = 0;
 
-/*while (!protonect_shutdown &&
-         (framemax == (size_t)-1 || framecount < framemax)) {*/
-         int i = 0;
+while (!protonect_shutdown &&
+         (framemax == (size_t)-1 || framecount < framemax)) {
+    /*     int i = 0;
    while ( i == 0){
-     i++;
+     i++;*/
     if (!listener.waitForNewFrame(frames, 10 * 1000))  // 10 sconds
     {
       cout << "timeout!" << endl;
@@ -145,12 +145,14 @@ int main(int argc, const char * argv[])
     if (enable_rgb && enable_depth) {
       registration->apply(rgb, depth, &undistorted, &registered);
     }
-    cv::Mat depthMat_frame(depth->height, depth->width, CV_32FC1, depth->data);
-    cv::Mat depthMat(depth->height, depth->width, CV_32FC1);
+    cv::Mat depthMat_frame(depth->height, depth->width, CV_8UC1, depth->data);
+  //  normalize(depthMat_frame,depthMat_frame,0,1);
+
+    cv::Mat depthMat,initialUnknown;
     depthMat_frame.copyTo(depthMat);
+
     cv::Mat rgbMatrix(registered.height, registered.width, CV_8UC4, registered.data);
-    cv::Mat initialUnknown;
-    cv::Mat subt;
+        cv::Mat subt;
   //  subtract(depthMat, 255, depthMat);
   //  resize(rgbMatrix, rgbMatrix, depthMat.size(), 0, 0, INTER_LINEAR);
     cv::cvtColor(rgbMatrix, rgbMatrix, CV_BGRA2GRAY); // transform to gray scale
@@ -160,18 +162,22 @@ int main(int argc, const char * argv[])
     double min, max;
     minMaxLoc(depthMat, &min, &max);
     depthMat.convertTo(depthMat, CV_32FC1, -255.0 / max, 255.0);  // Conversion to char to show
+    imshow("rgbMatrix", rgbMatrix);
+
+    imshow("depthMat_frame", depthMat);
+    cv::waitKey(40);
   //  initialUnknown.convertTo(initialUnknown, CV_32FC1, -255.0 / max, 255.0);  // Conversion to char to show
     depthMat.copyTo(initialUnknown);
 
     //normalize(rgbMatrix,rgbMatrix,0,1, NORM_L2);
-    //normalize(depthMat,depthMat,0,255, NORM_L2);
+//normalize(depthMat,depthMat,0,1, NORM_L2);
 
     //normalize(depthMat,depthMat,0,1, NORM_L2);
   //  normalize(initialUnknown,initialUnknown,0,1, NORM_L2);
     cv::Mat depthToShow;
     depthMat.convertTo(depthToShow,CV_8UC1);
-    /*imshow("depthMat", depthToShow);
-    cv::waitKey(20);*/
+    //imshow("depthMat", depthToShow);
+  //  cv::waitKey(20);
 
   //  imshow("RGB",rgbMatrix);
   //  cv::waitKey(30);
@@ -182,7 +188,7 @@ int main(int argc, const char * argv[])
     // >> Kinect input >> //
 
     // >> OPT >> //
-    std::string inputFilenamePrefix = "../data/shape_from_shading/default";
+/*std::string inputFilenamePrefix = "../data/shape_from_shading/default";
     if (argc >= 2) {
         inputFilenamePrefix = std::string(argv[1]);
     }
@@ -225,7 +231,9 @@ int main(int argc, const char * argv[])
     result->save("sfsOutput.imagedump");
     result->savePNG("sfsOutput", 150.0f);
     result->savePLYMesh("sfsOutput.ply");
-    printf("Save\n");
+    printf("Save\n");*/
+    framecount++;
+
     listener.release(frames);
     /**
      * libfreenect2::this_thread::sleep_for(libfreenect2::chrono::milliseconds(100));

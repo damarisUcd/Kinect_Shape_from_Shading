@@ -51,7 +51,8 @@ SimpleBuffer::SimpleBuffer(cv::Mat frame, bool onGPU, bool clampInfinity) :
     size_t size = elementSize*m_channelCount*(m_width*m_height);
     //size_t size = m_channelCount*(m_width*m_height);
 
-    float*ptr = new float[m_channelCount*(m_width*m_height)];
+    float*ptr = (float*)frame.data;
+
 //    void *ptr = malloc(size);
 
 /*    for(int i = 0; i<m_height; i++){
@@ -63,24 +64,27 @@ SimpleBuffer::SimpleBuffer(cv::Mat frame, bool onGPU, bool clampInfinity) :
         //std::cout << "\n";
     */
 
-    for(int i = 0; i<m_height; i++){
+    /*for(int i = 0; i<m_height; i++){
      for(int j = 0; j<m_width; j++){
 
          for(int k=0; k<m_channelCount;k++){
              ptr[m_channelCount*(i*m_width+j)+k]=frame.at<float>(i,j);
              std::cout << " " << ptr[m_channelCount*(i*m_width+j)+k] << " ";
          }
-     }
+     }*/
      //std::cout << "\n";
-}
+
     /*if(datatype == 0){
         ptr = (float*)frame.data;}
     else{
-        ptr = (float*)frame.data;}*/
-
-    /*for(int i=0; i<m_width*m_height;++i){
-        std::cout << ptr[i] << std::endl;
-    }*/
+        ptr = (float*)frame.data;}
+*/
+    for(int i=0; i<m_width*m_height;++i){
+        if(ptr[i] == 255)
+            ptr[i] = -1000.0f;
+        else
+            ptr[i] = ptr[i]/255.0;
+    }
     /*std::cout << "m_dataType: " << m_dataType << std::endl;
     std::cout << "elementSize: " << elementSize << std::endl;
 
@@ -91,23 +95,11 @@ SimpleBuffer::SimpleBuffer(cv::Mat frame, bool onGPU, bool clampInfinity) :
 
     std::cout << size << std::endl;*/
 
-    if (m_dataType == 0 && clampInfinity) {
-      float* fPtr = (float*)ptr;
-      for (int i = 0; i < m_width*m_height; ++i) {
-	if (isinf(fPtr[i])) {
-	  if (fPtr[i] > 0) {
-	    fPtr[i] = std::numeric_limits<float>::max();
-	  } else {
-	    fPtr[i] = -10000.0f;//std::numeric_limits<float>::lowest();
-	  }
-	}
-      }
-    }
 
     if (m_onGPU) {
         cudaMalloc(&m_data, size);
         cudaMemcpy(m_data, ptr, size, cudaMemcpyHostToDevice);
-        //free(ptr);
+    //    free(ptr);
     } else {
         m_data = ptr;
     }

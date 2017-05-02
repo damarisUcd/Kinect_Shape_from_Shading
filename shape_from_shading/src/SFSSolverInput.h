@@ -51,9 +51,9 @@ struct SFSSolverInput {
     }
 
     void load(const cv::Mat frame, const cv::Mat depthMap,const cv::Mat initialUnk,  const cv::Mat mask, bool onGPU) {
-        targetIntensity = std::shared_ptr<SimpleBuffer>(new SimpleBuffer(frame, onGPU));
-        maskEdgeMap     = std::shared_ptr<SimpleBuffer>(new SimpleBuffer(mask,     onGPU));
-        initialUnknown  = std::shared_ptr<SimpleBuffer>(new SimpleBuffer(initialUnk, onGPU));
+      //  targetIntensity = std::shared_ptr<SimpleBuffer>(new SimpleBuffer(frame, onGPU));
+      //  maskEdgeMap     = std::shared_ptr<SimpleBuffer>(new SimpleBuffer(mask,     onGPU));
+      //  initialUnknown  = std::shared_ptr<SimpleBuffer>(new SimpleBuffer(initialUnk, onGPU));
         targetDepth     = std::shared_ptr<SimpleBuffer>(new SimpleBuffer(depthMap,     onGPU));
         std::cout << "Data loaded" << std::endl;
 
