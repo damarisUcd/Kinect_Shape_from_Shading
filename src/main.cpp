@@ -163,13 +163,16 @@ int main(int argc, const char * argv[])
       //  resize(rgbMatrix, rgbMatrix, depthMat.size(), 0, 0, INTER_LINEAR);
         cv::cvtColor(rgbMatrix, rgbMatrix, CV_BGRA2GRAY); // transform to gray scale
 
-        rgbMatrix.convertTo(rgbMatrix, CV_32FC1);
+        rgbMatrix.convertTo(rgbMatrix, CV_32FC1,1.0/255.0);
         double min, max;
         minMaxLoc(depthMat, &min, &max);
         depthMat.convertTo(depthMat, CV_32FC1, 255.0 / max);  // Conversion to char to show
-
         cv::Mat depth2show;
         depthMat.convertTo(depth2show,CV_8UC1);
+        depthMat.convertTo(depthMat, CV_32FC1, 1.0/255.0);  // Normalize between 0-1
+
+
+
         imshow("depthMat_frame", depth2show);
         cv::waitKey(30);
         depthMat.copyTo(initialUnknown);
@@ -195,9 +198,7 @@ int main(int argc, const char * argv[])
         SFSSolverInput solverInputCPU, solverInputGPU;
         solverInputGPU.load(rgbMatrix,depthMat, initialUnknown,mask, true);
 
-        printf("hi\n");
         solverInputGPU.targetDepth->savePLYMesh("sfsInitDepth.ply");
-        printf("bye\n");
 
         //solverInputCPU.load(inputFilenamePrefix, false);
 
