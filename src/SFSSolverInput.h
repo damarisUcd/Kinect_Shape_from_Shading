@@ -46,23 +46,25 @@ struct SFSSolverInput {
         probParams.set("edgeMaskC", edgeMaskC);
     }
 
-    void load(const std::string& filenamePrefix, bool onGPU) {
-        targetIntensity = std::shared_ptr<SimpleBuffer>(new SimpleBuffer(filenamePrefix + "_targetIntensity.imagedump", onGPU));
-        targetDepth     = std::shared_ptr<SimpleBuffer>(new SimpleBuffer(filenamePrefix + "_targetDepth.imagedump",     onGPU));
-        initialUnknown  = std::shared_ptr<SimpleBuffer>(new SimpleBuffer(filenamePrefix + "_initialUnknown.imagedump", onGPU));
-        maskEdgeMap     = std::shared_ptr<SimpleBuffer>(new SimpleBuffer(filenamePrefix + "_maskEdgeMap.imagedump",     onGPU));
+    void load(const cv::Mat frame, const cv::Mat depthMap, const cv::Mat initialUnk,  const cv::Mat mask, bool onGPU) {
+      targetIntensity = std::shared_ptr<SimpleBuffer>(new SimpleBuffer(frame, onGPU));
+      maskEdgeMap     = std::shared_ptr<SimpleBuffer>(new SimpleBuffer(mask,     onGPU));
+      initialUnknown  = std::shared_ptr<SimpleBuffer>(new SimpleBuffer(initialUnk, onGPU));
+      targetDepth     = std::shared_ptr<SimpleBuffer>(new SimpleBuffer(depthMap,     onGPU));
 
-        auto test = std::shared_ptr<SimpleBuffer>(new SimpleBuffer(filenamePrefix + "_targetDepth.imagedump", false));
+    /*    auto test = std::shared_ptr<SimpleBuffer>(new SimpleBuffer(depthMap, false));
         float* ptr = (float*)test->data();
         int numActiveUnkowns = 0;
         for (int i = 0; i < test->width()*test->height(); ++i) {
             if (ptr[i] > 0.0f) {
                 ++numActiveUnkowns;
             }
-        }
-        printf("Num Active Unknowns: %d\n", numActiveUnkowns);
+        }*/
+    //    printf("Num Active Unknowns: %d\n", numActiveUnkowns);
 
+        std::string filenamePrefix = "./data/shape_from_shading/default";
         parameters.load(filenamePrefix + ".SFSSolverParameters");
+        std::cout << "Parameters load" << std::endl;
     }
 
 };
