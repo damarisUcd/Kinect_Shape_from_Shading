@@ -153,7 +153,7 @@ int main(int argc, const char * argv[])
         mask.copyTo(targetROI);
         targetROI = binary_mask(cv::Rect(0, mask.rows, mask.cols, mask.rows));
         mask.copyTo(targetROI);
-        imshow("mask",binary_mask);
+        //imshow("mask",binary_mask);
       //
       double min, max;
 
@@ -164,8 +164,22 @@ int main(int argc, const char * argv[])
         depthBilateralF.convertTo(depthBilateralD, CV_64FC1);  // Conversion to double
         minMaxLoc(depthBilateralD,&min,&max);
 
+
+
+        // Remove spikes from Gaussian blurring by erosion.
+        // We should also dilate the depth map before blurring to fill some gaps.
+        mask.convertTo(mask,CV_64FC1);
+
+        cv::Mat element = getStructuringElement(cv::MORPH_RECT,cv::Size(filterWidth, filterWidth),cv::Point(filterWidth/2,filterWidth/2));
+        erode(mask, mask, element);
+        erode(binary_mask, binary_mask, element);
+        imshow( "Eroded mask", binary_mask);
+        depthBilateralD = depthBilateralD.mul(mask);
+
+
+
         // Conversion to uchar (value between 0 and 255) to show
-        depthBilateralF.convertTo(depthBilateralF, CV_32FC1, 255.0 / max);
+        depthBilateralD.convertTo(depthBilateralF, CV_32FC1, 255.0 / max);
 
         cv::Mat subt;
       //  resize(rgbMatrix, rgbMatrix, depthMat.size(), 0, 0, INTER_LINEAR);
@@ -173,13 +187,10 @@ int main(int argc, const char * argv[])
 
         rgbMatrix.convertTo(rgbMatrix, CV_32FC1,1.0/255.0);
         minMaxLoc(depthMat, &min, &max);
-        depthMat.convertTo(depthMat, CV_32FC1, 255.0 / max);  // Conversion to char to show
+        depthMat.convertTo(depthMat, CV_32FC1, 1.0 / max);  // Conversion to char to show
         cv::Mat depth2show;
         depthMat.convertTo(depth2show,CV_8UC1);
         depthBilateralF.convertTo(depthBilateralF, CV_32FC1, 1.0/255.0);  // Normalize between 0-1
-
-
-
 
         imshow("depthMat_frame", depth2show);
         cv::waitKey(30);
@@ -204,9 +215,10 @@ int main(int argc, const char * argv[])
         }
 
         SFSSolverInput solverInputCPU, solverInputGPU;
-        solverInputGPU.load(rgbMatrix,depthBilateralF, initialUnknown,mask, true);
+        solverInputGPU.load(rgbMatrix, depthBilateralF, initialUnknown, binary_mask, true);
 
         solverInputGPU.targetDepth->savePLYMesh("sfsInitDepth.ply");
+        solverInputGPU.targetDepth->savePNG("sfsInitDepth.png",255);
 
         //solverInputCPU.load(inputFilenamePrefix, false);
 
