@@ -143,8 +143,15 @@ int main(int argc, const char * argv[])
         if (enable_rgb && enable_depth) {
           registration->apply(rgb, depth, &undistorted, &registered);
         }
+
+        //Convert from libfreenect2 to cv::Mat
         cv::Mat depthMat_frame(depth->height, depth->width, CV_32FC1, depth->data);
         cv::Mat rgbMatrix(registered.height, registered.width, CV_8UC4, registered.data);
+        cv::Mat grayMatrix;
+        cv::cvtColor(rgbMatrix, grayMatrix, CV_BGRA2GRAY); // transform to gray scale
+        grayMatrix.convertTo(grayMatrix, CV_32FC1,1.0/255.0); // Normalize intensity
+
+        //Binary_mask
         cv::Mat binary_mask(2*depth->height, depth->width, CV_32FC1, cv::Scalar(1));
         cv::Mat mask(depth->height, depth->width, CV_32FC1, cv::Scalar(1));
         mask.setTo(0, depthMat_frame == 0);
@@ -153,48 +160,39 @@ int main(int argc, const char * argv[])
         mask.copyTo(targetROI);
         targetROI = binary_mask(cv::Rect(0, mask.rows, mask.cols, mask.rows));
         mask.copyTo(targetROI);
-        //imshow("mask",binary_mask);
-      //
-      double min, max;
 
-        cv::Mat depthMat,initialUnknown,depthD,depthBilateralF,depthBilateralD;
+        //
+        double min, max;
+        cv::Mat depthMat,initialUnknown,depthBilateralF,depthBilateralD;
         depthMat_frame.copyTo(depthMat);
+
+        // Gaussian filter to depthMap
         const int filterWidth = 7;
-        GaussianBlur(depthMat, depthBilateralF, cv::Size(filterWidth,filterWidth),3,3, BORDER_REFLECT);
+        GaussianBlur(depthMat, depthBilateralF, cv::Size(filterWidth,filterWidth),3,3);
         depthBilateralF.convertTo(depthBilateralD, CV_64FC1);  // Conversion to double
-        minMaxLoc(depthBilateralD,&min,&max);
-
-
 
         // Remove spikes from Gaussian blurring by erosion.
         // We should also dilate the depth map before blurring to fill some gaps.
         mask.convertTo(mask,CV_64FC1);
-
         cv::Mat element = getStructuringElement(cv::MORPH_RECT,cv::Size(filterWidth, filterWidth),cv::Point(filterWidth/2,filterWidth/2));
         erode(mask, mask, element);
         erode(binary_mask, binary_mask, element);
         imshow( "Eroded mask", binary_mask);
         depthBilateralD = depthBilateralD.mul(mask);
+        minMaxLoc(depthBilateralD,&min,&max);
 
-
-
-        // Conversion to uchar (value between 0 and 255) to show
+        // Normalization of depth map to be an OPT input
         depthBilateralD.convertTo(depthBilateralF, CV_32FC1, 255.0 / max);
+        depthBilateralF.convertTo(depthBilateralF, CV_32FC1, 1.0/255.0);  // Normalize between 0-1
+        depthBilateralF.copyTo(initialUnknown);
 
-        cv::Mat subt;
-      //  resize(rgbMatrix, rgbMatrix, depthMat.size(), 0, 0, INTER_LINEAR);
-        cv::cvtColor(rgbMatrix, rgbMatrix, CV_BGRA2GRAY); // transform to gray scale
-
-        rgbMatrix.convertTo(rgbMatrix, CV_32FC1,1.0/255.0);
+        // Visualization
         minMaxLoc(depthMat, &min, &max);
         depthMat.convertTo(depthMat, CV_32FC1, 1.0 / max);  // Conversion to char to show
         cv::Mat depth2show;
         depthMat.convertTo(depth2show,CV_8UC1);
-        depthBilateralF.convertTo(depthBilateralF, CV_32FC1, 1.0/255.0);  // Normalize between 0-1
-
         imshow("depthMat_frame", depth2show);
         cv::waitKey(30);
-        depthMat.copyTo(initialUnknown);
         // >> Kinect input >> //
 
         // >> OPT >> //
@@ -215,7 +213,7 @@ int main(int argc, const char * argv[])
         }
 
         SFSSolverInput solverInputCPU, solverInputGPU;
-        solverInputGPU.load(rgbMatrix, depthBilateralF, initialUnknown, binary_mask, true);
+        solverInputGPU.load(grayMatrix, depthBilateralF, initialUnknown, binary_mask, true);
 
         solverInputGPU.targetDepth->savePLYMesh("sfsInitDepth.ply");
         solverInputGPU.targetDepth->savePNG("sfsInitDepth.png",255);
