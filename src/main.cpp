@@ -160,9 +160,7 @@ int main(int argc, const char * argv[])
         cv::Mat depthMat,initialUnknown,depthD,depthBilateralF,depthBilateralD;
         depthMat_frame.copyTo(depthMat);
         const int filterWidth = 7;
-
-        GaussianBlur(depthMat, depthBilateralF, cv::Size(filterWidth,filterWidth),3,3);
-
+        GaussianBlur(depthMat, depthBilateralF, cv::Size(filterWidth,filterWidth),3,3, BORDER_REFLECT);
         depthBilateralF.convertTo(depthBilateralD, CV_64FC1);  // Conversion to double
         minMaxLoc(depthBilateralD,&min,&max);
 
@@ -179,6 +177,7 @@ int main(int argc, const char * argv[])
         cv::Mat depth2show;
         depthMat.convertTo(depth2show,CV_8UC1);
         depthBilateralF.convertTo(depthBilateralF, CV_32FC1, 1.0/255.0);  // Normalize between 0-1
+
 
 
 
@@ -211,7 +210,7 @@ int main(int argc, const char * argv[])
 
         //solverInputCPU.load(inputFilenamePrefix, false);
 
-        printf("Solving\n");
+      /*  printf("Solving\n");
         //
         std::shared_ptr<SimpleBuffer> result;
         std::vector<unsigned int> dims;
@@ -232,7 +231,7 @@ int main(int argc, const char * argv[])
         result->save("sfsOutput.imagedump");
         result->savePNG("sfsOutput", 150.0f);
         result->savePLYMesh("sfsOutput.ply");
-        printf("Save\n");
+        printf("Save\n");*/
 
         framecount++;
 
