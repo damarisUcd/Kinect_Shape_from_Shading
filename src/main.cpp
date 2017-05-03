@@ -188,7 +188,7 @@ int main(int argc, const char * argv[])
 
         // Visualization
         minMaxLoc(depthMat, &min, &max);
-        depthMat.convertTo(depthMat, CV_32FC1, 1.0 / max);  // Conversion to char to show
+        depthMat.convertTo(depthMat, CV_32FC1, 255.0 / max);  // Conversion to char to show
         cv::Mat depth2show;
         depthMat.convertTo(depth2show,CV_8UC1);
         imshow("depthMat_frame", depth2show);
